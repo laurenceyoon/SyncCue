@@ -1,4 +1,4 @@
-from pythonosc import osc_packet
+from pythonosc.osc_packet import OscPacket
 from twisted.internet.protocol import DatagramProtocol
 
 
@@ -12,24 +12,11 @@ class OSCUDPServer(DatagramProtocol):
 
     def datagramReceived(self, datagram, address):
         try:
-            parsed_packet = osc_packet.OscPacket(datagram)
-
-            if isinstance(parsed_packet, osc_packet.OscMessage):
-                address = parsed_packet.address
-                args = parsed_packet.params
-
-                handler = self.handlers.get(address, self.handle_default)
-                handler(address, args)
-
-            elif isinstance(parsed_packet, osc_packet.OscBundle):
-                for bundled_msg in parsed_packet.content:
-                    if isinstance(bundled_msg, osc_packet.OscMessage):
-                        address = bundled_msg.address
-                        args = bundled_msg.params
-
-                        handler = self.handlers.get(address, self.handle_default)
-                        handler(address, args)
-
+            parsed_packet = OscPacket(datagram)
+            for msg in parsed_packet.messages:
+                handler = self.handlers.get(msg.message.address)
+                if handler:
+                    handler(msg.message.address, *msg.message.params)
         except Exception as e:
             print(f"Error processing OSC message: {e}")
 

@@ -11,7 +11,7 @@ It can also handle MIDI controls with Disklavier, camera input for vision cue de
 
 ### How to use
 
-#### Setting Development Environment
+##### Setting Development Environment
 Tested on Python 3.11 & Mambaforge
 
 - If you don't have mamba in your environment, it's okay with installing it with `conda` instead.
@@ -27,10 +27,10 @@ $ mamba activate sync
 
 ```bash
 # run OSC server with dashboard page
-$ python3 app/main.py
+$ python -m app.main
 
 # run only OSC server
-$ python3 app/main.py --no-dashboard
+$ python -m app.main --no-dashboard
 ```
 
 ##### Run OSC Client

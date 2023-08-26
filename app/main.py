@@ -3,27 +3,32 @@ from twisted.internet import reactor
 from .osc_server import OSCUDPServer
 import subprocess
 
-
 server = OSCUDPServer()
 
 
 @server.add_handler("/start")
-def handle_start(address, args):
-    print(f"Starting with arguments: {args}")
+def handle_start(address, args=None):
+    print(
+        f"Received OSC message with {address}. Starting with arguments: {args, type(args)}"
+    )
 
 
 @server.add_handler("/stop")
-def handle_stop(address, args):
-    print(f"Stopping with arguments: {args}")
+def handle_stop(address, args=None):
+    print(
+        f"Received OSC message with {address}. Stopping with arguments: {args, type(args)}"
+    )
 
 
 @server.add_handler("/playback")
-def handle_playback(address, args):
-    print(f"Playback with arguments: {args}")
+def handle_playback(address, args=None):
+    print(
+        f"Received OSC message with {address}. Playback with arguments: {args, type(args)}"
+    )
 
 
 def run_streamlit_app():
-    subprocess.Popen(["streamlit", "run", "my_app.py"])
+    subprocess.Popen(["streamlit", "run", "frontend/Home.py"])
 
 
 if __name__ == "__main__":
