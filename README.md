@@ -1,6 +1,6 @@
 # SyncCue
 
-### About
+## About
 
 `SyncCue` is an OSC-based python server using the [Twisted](https://twisted.org/) framework, designed to synchronize cues between multiple systems such as Unity, TouchDesigner, Qlab, etc. 
 It can also handle MIDI controls with Disklavier, camera input for vision cue detection, and microphone input for score following.
@@ -9,9 +9,9 @@ It can also handle MIDI controls with Disklavier, camera input for vision cue de
     
     `twisted` supports various network protocols (including UDP) and operates on an event-driven architecture, enabling it to handle asynchronous network operations.
 
-### How to use
+## How to use
 
-##### Setting Development Environment
+#### Setting Development Environment
 Tested on Python 3.11 & Mambaforge
 
 - If you don't have mamba in your environment, it's okay with installing it with `conda` instead.
@@ -23,7 +23,7 @@ $ mamba env create -f environment.yaml
 $ mamba activate sync
 ```
 
-##### Run OSC Server
+#### Run OSC Server
 
 ```bash
 # run OSC server with dashboard page
@@ -33,7 +33,7 @@ $ python -m app.main
 $ python -m app.main --no-dashboard
 ```
 
-##### Run OSC Client
+#### Run OSC Client
 
 You can access admin page with [your browser](http://localhost:8501),
 Or you can send OSC message with the following code.
