@@ -1,6 +1,7 @@
 import argparse
 from twisted.internet import reactor
 from .osc_server import OSCUDPServer
+from .core.cue_detection import cue_detection_start
 import subprocess
 
 server = OSCUDPServer()
@@ -11,6 +12,7 @@ def handle_start(address, args=None):
     print(
         f"Received OSC message with {address}. Starting with arguments: {args, type(args)}"
     )
+    cue_detection_start()
 
 
 @server.add_handler("/stop")
