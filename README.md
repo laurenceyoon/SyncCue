@@ -21,6 +21,11 @@ $ git clone git@github.com:laurenceyoon/synccue.git
 $ cd synccue
 $ mamba env create -f environment.yaml
 $ mamba activate sync
+
+# install mongodb & run database
+$ brew tap mongodb/brew && \ 
+    brew install mongodb-community@7.0 && \
+    brew services start mongodb-community@7.0
 ```
 
 #### Run OSC Server

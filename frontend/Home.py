@@ -1,4 +1,11 @@
+import os
+import sys
+
 import streamlit as st
+from dotenv import load_dotenv
+
+load_dotenv()
+sys.path.insert(0, os.getenv("PYTHONPATH"))
 
 
 def read_file(file):
