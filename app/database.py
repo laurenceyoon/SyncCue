@@ -18,7 +18,7 @@ class Piece(Document):
 # ================== CRUD ==================
 
 
-def get_piece_list() -> dict:
+def get_piece_list():
     return Piece.objects.all()
 
 

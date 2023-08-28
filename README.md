@@ -22,6 +22,9 @@ $ cd synccue
 $ mamba env create -f environment.yaml
 $ mamba activate sync
 
+# add PYTHONPATH to .env file
+$ echo "PYTHONPATH=\"$PWD\"" >> .env
+
 # install mongodb & run database
 $ brew tap mongodb/brew && \ 
     brew install mongodb-community@7.0 && \

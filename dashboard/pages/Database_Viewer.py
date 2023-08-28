@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import time
 
-from app.database import get_piece_list, insert_piece, update_piece
+from app.database import get_piece_list, insert_piece, update_piece, get_piece_by_id
 
 st.title("Database Viewer")
 
@@ -23,7 +23,7 @@ with st.container():
     if not selected_rows.empty:
         selected_row = selected_rows.iloc[-1]
         st.session_state.selected_row = selected_row
-        st.table(selected_row)
+        st.json(get_piece_by_id(selected_row["_id"]).to_mongo().to_dict())
         if st.button("Edit"):
             st.session_state.last_clicked = "Edit"
 
