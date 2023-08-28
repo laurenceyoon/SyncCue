@@ -30,7 +30,7 @@ def handle_playback(address, args=None):
 
 
 def run_streamlit_app():
-    subprocess.Popen(["streamlit", "run", "frontend/Home.py"])
+    subprocess.Popen(["streamlit", "run", "dashboard/Home.py"])
 
 
 if __name__ == "__main__":

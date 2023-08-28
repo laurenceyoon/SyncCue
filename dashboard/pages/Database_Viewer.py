@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import time
 
 from app.database import get_piece_list, insert_piece, update_piece
 
@@ -15,7 +16,7 @@ with st.container():
     st.markdown("### Table `pieces`")
     pieces = get_piece_list()
     pieces_df = pd.DataFrame([piece.to_mongo().to_dict() for piece in pieces])
-    pieces_df["select"] = False
+    pieces_df.insert(0, "select", False)
     edited_df = st.data_editor(pieces_df, width=800)
 
     selected_rows = edited_df[edited_df["select"] == True]
@@ -49,6 +50,8 @@ with st.container():
                 st.success(f"Updated piece with ID {updated_piece.title}!")
                 st.session_state.last_clicked = None
                 st.session_state.selected_row = None
+                time.sleep(2)
+                st.experimental_rerun()
 
     if st.button("Add"):
         st.session_state.last_clicked = "Add"
