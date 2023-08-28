@@ -14,21 +14,21 @@ def send_osc_msg(address, arguments):
 
 # ====================================
 
-st.title("OSC Client")
+st.title("OSC Specification")
 
-# OSC Server IP and Port
+# Basic Info
 with st.container():
+    st.subheader("Basic OSC Configuration")
     col1, col2 = st.columns(2)
     with col1:
         OSC_SERVER_IP = st.text_input("OSC Server IP", "127.0.0.1")
     with col2:
         OSC_SERVER_PORT = int(st.text_input("OSC Server Port", 9999))
-    osc_client = udp_client.SimpleUDPClient(OSC_SERVER_IP, OSC_SERVER_PORT)
 
-
-# Send OSC Message
+# OSC In
 with st.container():
-    st.subheader("Send OSC Message")
+    st.subheader("OSC In")
+    osc_client = udp_client.SimpleUDPClient(OSC_SERVER_IP, OSC_SERVER_PORT)
     st.caption("Choose an OSC message to send:")
 
     # OSC Message List
@@ -53,3 +53,7 @@ with st.container():
         )
         if st.button("Send", key="playback_send", use_container_width=True):
             send_osc_msg(address, arguments)
+
+# OSC OUT
+with st.container():
+    st.subheader("OSC Out")
