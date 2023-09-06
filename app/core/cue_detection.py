@@ -11,6 +11,13 @@ from .midiplay_optical_peak_merge import port_index, await_frames, play_midi_fil
 import csv # list를 csv 형태로 저장
 import os
 
+#=======Face Detection 추가 (0903)==============================================
+import mediapipe as mp
+mp_face_detection = mp.solutions.face_detection
+face_detection = mp_face_detection.FaceDetection(min_detection_confidence=0.1)
+#==============================================================================
+
+# def process_video_capture(midi_file_path, port_index) in cue_performance.ipynb
 feature_params = dict(maxCorners=1000, qualityLevel=0.01, minDistance=10, blockSize=50)
 lk_params = dict(
     winSize=(15, 15),
@@ -19,6 +26,12 @@ lk_params = dict(
 )
 
 midi_file_path = "./resources/midi/test_beethoven.mid"
+# "./resources/midi/startcue_ai_original.mid"
+# "./resources/midi/startcue_ai_revised.mid"
+# "./resources/midi/fermatacue_ai_1.mid"
+# "./resources/midi/fermatacue_ai_2.mid"
+# "./resources/midi/fermatacue_ai_3.mid"
+
 port_index = 0
 threshold_max = 1
 threshold_min = -1
