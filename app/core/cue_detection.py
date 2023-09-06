@@ -8,7 +8,8 @@ from mido import MetaMessage
 import time
 from .videocapture import VideoCaptureAsync
 from .midiplay_optical_peak_merge import port_index, await_frames, play_midi_file
-
+import csv # list를 csv 형태로 저장
+import os
 
 feature_params = dict(maxCorners=1000, qualityLevel=0.01, minDistance=10, blockSize=50)
 lk_params = dict(
@@ -23,6 +24,24 @@ threshold_max = 1
 threshold_min = -1
 delay_adjust = 0.25
 
+#==============Client로써 전달할 정보들을 불러오기 위해 전역변수와 함수를 정의============
+time_stamp = None; y_vel = None; y_vel_filt = None; cue = [None, None]
+    
+def write_cue_start():
+    with open(os.getcwd()+"/cue_info.csv", 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(["type", f"time_stamp ({type(time_stamp)})", f"y_vel {y_vel.shape, type(y_vel)}", f"y_vel_filt {y_vel_filt.shape, type(y_vel_filt)}", f"cue ({type(cue)})"])
+        writer.writerow(["start", time_stamp, y_vel, y_vel_filt, cue])
+
+def write_cue_end():
+    with open(os.getcwd()+"/cue_info.csv", 'a', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(["end", time_stamp,y_vel, y_vel_filt, cue])
+        
+
+def get_info(): # Client로써 전달할 정보들을 불러오는 메소드 (튜플 형태)
+    return time_stamp, y_vel, y_vel_filt, cue
+#===========================================================================
 
 def cue_detection_start():
     print(
@@ -40,11 +59,19 @@ def cue_detection_start():
     print("Capture Started")
     capture_first = False
 
+    #==== 전역변수 활용 ====
+    global time_stamp
+    global y_vel
+    global y_vel_filt
+    global cue
+    #==== 전역변수 활용 ====
+    
     n_frame = 0
     time_stamps = []
     y_mean_list = []
-    cue = [None, None]
+    
     while True:
+        print(f"cue:{cue}")
         # capture first frame
         if not capture_first:
             frame, time_stamp = cap.capture()
@@ -88,7 +115,8 @@ def cue_detection_start():
                 if len(peaks) >= 1:
                     # cue detected
                     print(f"Cue Start detected: {peaks[0]}")
-                    cue[0] = peaks[0]
+                    cue[0] = peaks[0] # Cue Start (Bottom Cue 탐지)
+                    write_cue_start()
                     continue
 
             if cue[0] is not None:
@@ -100,6 +128,7 @@ def cue_detection_start():
                     # cue detected
                     cue[1] = mins[0] + min_start_index
                     print(f"Cue End detected: {cue[1]}")
+                    write_cue_end()
                     break
 
         if cv2.waitKey(1) & 0xFF == ord("q"):

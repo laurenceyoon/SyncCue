@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, connect
+from mongoengine import Document, StringField, connect # mongoDB
 
 MONGODB_HOST = "0.0.0.0"
 MONGODB_PORT = 27017
@@ -18,7 +18,7 @@ class Piece(Document):
 # ================== CRUD ==================
 
 
-def get_piece_list():
+def get_piece_list() -> dict:
     return Piece.objects.all()
 
 

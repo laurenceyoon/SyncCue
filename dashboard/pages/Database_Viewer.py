@@ -2,8 +2,7 @@ import streamlit as st
 import pandas as pd
 import time
 
-from app.database import get_piece_list, insert_piece, update_piece, get_piece_by_id
-
+from ...app.database import get_piece_list, insert_piece, update_piece, get_piece_by_id
 st.title("Database Viewer")
 
 # session state setup

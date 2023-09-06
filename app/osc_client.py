@@ -9,7 +9,11 @@ class EchoClientUDP(DatagramProtocol):
     def datagramReceived(self, datagram, address):
         print(f"Received reply: {datagram.decode()}")
 
-
+class OSCUDPClient(DatagramProtocol):
+    def __init__(self):
+        self.handlers = {}
+    
+    
 # UDP 클라이언트 시작
 reactor.listenUDP(0, EchoClientUDP())  # 0은 OS에 무작위 포트 할당을 요청
 reactor.run()
