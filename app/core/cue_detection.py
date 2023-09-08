@@ -40,10 +40,10 @@ threshold_min = -1
 delay_adjust = 0.25
 
 #==============Client로써 전달할 정보들을 불러오기 위해 전역변수와 함수를 정의============
-time_stamp = None; y_vel = None; y_vel_filt = None; cue = [None, None]
-    
+time_stamp = np.ndarray([]); y_vel = np.ndarray([]); y_vel_filt = np.ndarray([]); cue = [None, None]
+
 def write_cue_start():
-    with open(os.getcwd()+midi_files_list[file_num]+"/cue_info.csv", 'w', newline='') as f:
+    with open(os.getcwd()+'/'+midi_files_list[file_num]+"/cue_info.csv", 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(["type", f"time_stamp ({type(time_stamp)})", f"y_vel {y_vel.shape, type(y_vel)}", f"y_vel_filt {y_vel_filt.shape, type(y_vel_filt)}", f"cue ({type(cue)})"])
         writer.writerow(["start", time_stamp, y_vel, y_vel_filt, cue])
@@ -59,6 +59,11 @@ def get_info(): # Client로써 전달할 정보들을 불러오는 메소드 (�
 #===========================================================================
 
 def cue_detection_start():
+    global y_vel
+    global time_stamp
+    global y_vel_filt
+    global cue
+    
     print(f"MIDI Output Ports: {mido.get_output_names()}, selected: {mido.get_output_names()[port_index]}")
     port = mido.open_output(mido.get_output_names()[port_index])
 
@@ -104,7 +109,7 @@ def cue_detection_start():
                             x, y, w, h = int(bboxC.xmin * iw), int(bboxC.ymin * ih), int(bboxC.width * iw), int(bboxC.height * ih)
                             print(f'Face detected at {x}, {y}, {w}, {h}')
                             initial_rect = (x, y, w, h)  # Save the detected face area
-                        print('First frame captured')
+                        print('** First frame captured **')
                         capture_first = True
                         last_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                         # if initial_rect:
@@ -132,6 +137,14 @@ def cue_detection_start():
                 if p1 is not None:
                     good_new = p1[st == 1]
                     good_old = p0[st == 1]
+                    for i, (new, old) in enumerate(zip(good_new, good_old)):
+                            a, b = new.ravel()
+                            c, d = old.ravel()
+                            cv2.line(frame, (int(a), int(b)), (int(c), int(d)), (0, 255, 0), 2)
+                            cv2.circle(frame, (int(a), int(b)), 5, (0, 0, 255), -1)
+
+                out.write(frame)
+                    
                 last_frame = current_frame.copy()
                 p0 = p1
                 time_stamps.append(time_stamp - start_time)
@@ -140,6 +153,10 @@ def cue_detection_start():
                 y_mean_list.append(y_mean)
                 # framerate fluctuation is ignored
                 y_vel = np.diff(y_mean_list)
+                # np.diff에 대한 설명: 리스트 내부에 인접한 숫자 아이템 간의 오차를 담는다 (기존 n개 -> n-1개로 아이템 개수 줄어듦)
+                # x = np.array([1, 2, 4, 7, 0])
+                # np.diff(x)
+                # array([ 1,  2,  3, -7])
 
                 # wait for 20 frames
                 if n_frame < await_frames and n_frame <= 5:
@@ -147,7 +164,7 @@ def cue_detection_start():
 
                 y_vel_filt = medfilt(y_vel, 5)
 
-                if cue[0] is None:
+                if cue[0] == None:
                     peaks, _ = find_peaks(y_vel_filt, height=threshold_max)
                     if len(peaks) >= 1:
                         # cue detected
@@ -155,8 +172,7 @@ def cue_detection_start():
                         cue[0] = peaks[0] # Cue Start (Bottom Cue 탐지)
                         write_cue_start()
                         continue
-
-                if cue[0] is not None:
+                else: # if cue[0] != None
                     min_start_index = cue[0]
                     mins, _ = find_peaks(
                         -y_vel_filt[min_start_index:], height=threshold_min
@@ -171,7 +187,7 @@ def cue_detection_start():
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
 
-        if cue[0] is None or cue[1] is None:
+        if cue[0] == None or cue[1] == None:
             print("Cue not detected")
             exit()
 
