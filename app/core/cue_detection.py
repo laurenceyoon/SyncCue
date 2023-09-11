@@ -95,7 +95,7 @@ def cue_detection_start():
     cap.start_cache()
     start_time = cap.start_time
     print("Capture Started")
-    client.send_message("/start", True) # OSC 통신 (1) - Capture Start
+    client.send_message("/start", 1) # OSC 통신 (1) - Capture Start
     capture_first = False # 6프레임부터 True로 변경
     
     n_frame = 0
