@@ -10,6 +10,13 @@ from .videocapture import VideoCaptureAsync
 from .midiplay_optical_peak_merge import port_index, await_frames, play_midi_file
 import csv # list를 csv 형태로 저장
 import os
+#===== Client로써 Unity에게 신호 전송 =====
+import argparse
+import random
+import time
+import sys
+from pythonosc import udp_client
+#=====================
 
 #=======Face Detection 추가 (0903)==============================================
 import mediapipe as mp
@@ -63,6 +70,13 @@ def cue_detection_start():
     global time_stamp
     global y_vel_filt
     global cue
+    #======OSC 통신========
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--ip", default="127.0.0.1", help="The ip of the OSC server")
+    parser.add_argument("--port", type=int, default=5005, help="The port the OSC server is listening on")
+    args = parser.parse_args()
+    client = udp_client.SimpleUDPClient(args.ip, args.port)
+    #=====================
     
     print(f"MIDI Output Ports: {mido.get_output_names()}, selected: {mido.get_output_names()[port_index]}")
     port = mido.open_output(mido.get_output_names()[port_index])
@@ -81,6 +95,7 @@ def cue_detection_start():
     cap.start_cache()
     start_time = cap.start_time
     print("Capture Started")
+    client.send_message("/start", True) # OSC 통신 (1) - Capture Start
     capture_first = False # 6프레임부터 True로 변경
     
     n_frame = 0
@@ -181,6 +196,8 @@ def cue_detection_start():
                         # cue detected
                         cue[1] = mins[0] + min_start_index
                         print(f"Cue End detected: {cue[1]}")
+                        if cue[1] and cue[0] != None:
+                            client.send_message("/detect", str(cue[1]-cue[0])) # OSC 통신 (2) - Detect
                         write_cue_end()
                         break
 
@@ -209,3 +226,11 @@ def cue_detection_start():
         print("Cue already passed")
         play_midi_file(midi_file_path, port)
     cap.stop_cache()
+
+# First Frame Capture
+# Estimate Note Onset (Min Peak)
+# Note Onset
+
+# First Frame 시그널 (bool)
+# Min Peak + 차오르는 시간 (bool + float)
+# MIDI Off (0.몇초 전) -> 지윤누나
