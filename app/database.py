@@ -1,4 +1,12 @@
-from mongoengine import Document, StringField, IntField, connect  # mongoDB
+from mongoengine import (
+    Document,
+    StringField,
+    FloatField,
+    IntField,
+    EmbeddedDocumentListField,
+    EmbeddedDocument,
+    connect,
+)  # mongoDB
 
 MONGODB_HOST = "0.0.0.0"
 MONGODB_PORT = 27017
@@ -8,18 +16,29 @@ connect("synccue", host=MONGODB_HOST, port=MONGODB_PORT)
 # ================== schema ==================
 
 
+class SubPiece(EmbeddedDocument):
+    midi_path = StringField(required=True)
+    end_time_margin = FloatField(required=True, default=0.0)
+
+    def __str__(self):
+        return f"SubPiece({self.midi_path})"
+
+
 class Piece(Document):
     title = StringField(required=True)
     composer = StringField(required=True)
     midi_path = StringField(required=True)
-    audio_path = StringField(required=True)
-    order = IntField(required=True)
+    subpieces = EmbeddedDocumentListField(SubPiece)
+    order = IntField(required=True, default=0)
+
+    def __str__(self):
+        return f"Piece({self.title})"
 
 
 # ================== CRUD ==================
 
 
-def get_piece_list() -> dict:
+def get_piece_list():
     return Piece.objects.all()
 
 
