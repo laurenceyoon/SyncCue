@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 import time
 
-from ...app.database import get_piece_list, insert_piece, update_piece, get_piece_by_id
+from app.database import get_piece_list, insert_piece, update_piece, get_piece_by_id
+
 st.title("Database Viewer")
 
 # session state setup
@@ -37,6 +38,9 @@ with st.container():
             edit_audio_path = st.text_input(
                 "Audio Path", value=selected_row["audio_path"]
             )
+            edit_order = st.number_input(
+                "Order", value=selected_row["order"], min_value=0
+            )
 
             if st.button("Update Piece"):
                 updated_piece = update_piece(
@@ -45,6 +49,7 @@ with st.container():
                     edit_composer,
                     edit_midi_path,
                     edit_audio_path,
+                    edit_order,
                 )
                 st.success(f"Updated piece with ID {updated_piece.title}!")
                 st.session_state.last_clicked = None
@@ -61,9 +66,10 @@ with st.container():
             new_composer = st.text_input("Composer")
             new_midi_path = st.text_input("MIDI Path")
             new_audio_path = st.text_input("Audio Path")
+            new_order = st.number_input("Order", min_value=0)
             if st.button("Add Piece"):
                 new_piece = insert_piece(
-                    new_title, new_composer, new_midi_path, new_audio_path
+                    new_title, new_composer, new_midi_path, new_audio_path, new_order
                 )
                 st.success(f"Added new piece with ID {new_piece.id}!")
                 st.session_state.last_clicked = None

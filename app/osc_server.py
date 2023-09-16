@@ -11,14 +11,11 @@ class OSCUDPServer(DatagramProtocol):
         print(f"OSC Server is running on {local_endpoint.host}:{local_endpoint.port}")
 
     def datagramReceived(self, datagram, address):
-        try:
-            parsed_packet = OscPacket(datagram)
-            for msg in parsed_packet.messages:
-                handler = self.handlers.get(msg.message.address)
-                if handler:
-                    handler(msg.message.address, *msg.message.params)
-        except Exception as e:
-            print(f"Error processing OSC message: {e}")
+        parsed_packet = OscPacket(datagram)
+        for msg in parsed_packet.messages:
+            handler = self.handlers.get(msg.message.address)
+            if handler:
+                handler(msg.message.address, *msg.message.params)
 
     def handle_default(self, address, args):
         print(f"Unknown address: {address} with arguments: {args}")
