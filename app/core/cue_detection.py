@@ -1,4 +1,4 @@
-import csv  # list를 csv 형태로 저장
+import csv
 import os
 import time
 
@@ -8,7 +8,7 @@ import numpy as np
 from scipy.signal import find_peaks, medfilt
 
 from ..osc_client import send_osc_detect, send_osc_end, send_osc_start
-from .midi_controller import play_midi_file
+from .midi_controller import midi_controller
 from .videocapture import VideoCaptureAsync
 
 feature_params = dict(maxCorners=1000, qualityLevel=0.01, minDistance=10, blockSize=50)
@@ -180,24 +180,24 @@ def cue_detection_start(title, midi_file_path):
 
                 y_vel_filt = medfilt(y_vel, 5)
 
-                if cue[0] == None:
+                if cue[0] is None:
                     peaks, _ = find_peaks(y_vel_filt, height=threshold_max)
                     if len(peaks) >= 1:
-                        # cue detected
+                        # start cue detected
                         print(f"Cue Start detected: {peaks[0]}")
                         cue[0] = peaks[0]  # Cue Start (Bottom Cue 탐지)
                         write_cue_start(title)
                         continue
-                else:  # if cue[0] != None
+                else:
                     min_start_index = cue[0]
                     mins, _ = find_peaks(
                         -y_vel_filt[min_start_index:], height=threshold_min
                     )
                     if len(mins) >= 1:
-                        # cue detected
+                        # end cue detected
                         cue[1] = mins[0] + min_start_index
                         print(f"Cue End detected: {cue[1]}")
-                        if cue[1] and cue[0] != None:
+                        if cue[1] and cue[0]:
                             send_osc_detect(cue[1] - cue[0])  # OSC 통신 (2) - Detect
 
                         write_cue_end(title)
@@ -206,7 +206,7 @@ def cue_detection_start(title, midi_file_path):
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
 
-        if cue[0] == None or cue[1] == None:
+        if cue[0] is None or cue[1] is None:
             print("Cue not detected")
             exit()
 
@@ -223,10 +223,10 @@ def cue_detection_start(title, midi_file_path):
     if time_left > 0:
         print(f"Wait for {time_left:.2f} seconds")
         time.sleep(time_left)
-        play_midi_file(midi_file_path)
+        midi_controller.play(midi_file_path)
     else:
         print("Cue already passed")
-        play_midi_file(midi_file_path)
+        midi_controller.play(midi_file_path)
     send_osc_end()  # OSC 통신 (3) - End of MIDI
     cap.stop_cache()
 

@@ -4,17 +4,20 @@ import subprocess
 from .database import Piece
 import time
 from .osc_server import server
+from .osc_client import send_osc_piece_info
 from twisted.internet import reactor
+from .core.midi_controller import midi_controller
 
 
 # add_handler 데코레이터는 인자로 address를 받고 self.handlers[address] = func를 수행한 뒤 func를 반환
 @server.add_handler("/start")  # 데코레이터는 함수를 수정하지 않은 상태에서 추가 기능을 구현할 때 사용
 def handle_start(address, args=None):
     print(
-        f"Received OSC message with {address}. Starting with arguments: {args, type(args)}"
+        f"<== Received OSC message with {address}. Starting with arguments: {args, type(args)}"
     )
     piece_order = int(args)
     piece = Piece.objects(order=piece_order).first()
+    send_osc_piece_info(piece.title, piece.composer)
     if piece.subpieces:
         subpieces = piece.subpieces
         for subpiece in subpieces:
@@ -32,6 +35,7 @@ def handle_stop(address, args=None):
     print(
         f"Received OSC message with {address}. Stopping with arguments: {args, type(args)}"
     )
+    midi_controller.stop_midi()
 
 
 @server.add_handler("/playback")
