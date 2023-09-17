@@ -1,12 +1,14 @@
-import argparse  # Python의 실행시에 커맨드 라인 인수를 다룰 때, ArgumentParser(argparse)를 사용하면 편리하다.
-from .core.cue_detection import cue_detection_start
+import argparse
 import subprocess
-from .database import Piece
 import time
-from .osc_server import server
-from .osc_client import send_osc_piece_info
+
 from twisted.internet import reactor
+
+from .core.cue_detection import cue_detection_start
 from .core.midi_controller import midi_controller
+from .database import Piece
+from .osc_client import send_osc_piece_info
+from .osc_server import server
 
 
 # add_handler 데코레이터는 인자로 address를 받고 self.handlers[address] = func를 수행한 뒤 func를 반환

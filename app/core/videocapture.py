@@ -1,6 +1,7 @@
-import cv2
-import time
 import threading
+import time
+
+import cv2
 
 # Copy from https://stackoverflow.com/questions/60501795/asynchronous-list-of-videos-to-be-stream-using-opencv-in-python
 

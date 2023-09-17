@@ -1,12 +1,12 @@
 from mongoengine import (
     Document,
-    StringField,
+    EmbeddedDocument,  # mongoDB
+    EmbeddedDocumentListField,
     FloatField,
     IntField,
-    EmbeddedDocumentListField,
-    EmbeddedDocument,
+    StringField,
     connect,
-)  # mongoDB
+)
 
 MONGODB_HOST = "0.0.0.0"
 MONGODB_PORT = 27017

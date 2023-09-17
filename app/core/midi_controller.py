@@ -1,7 +1,7 @@
-import mido
 import time
 
-from mido import MidiFile, MetaMessage
+import mido
+from mido import MetaMessage
 
 port_index = 0
 # port = mido.open_output()
