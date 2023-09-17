@@ -38,8 +38,8 @@ with st.container():
             edit_audio_path = st.text_input(
                 "Audio Path", value=selected_row["audio_path"]
             )
-            edit_order = st.number_input(
-                "Order", value=selected_row["order"], min_value=0
+            edit_number = st.number_input(
+                "Number", value=selected_row["number"], min_value=0
             )
 
             if st.button("Update Piece"):
@@ -49,7 +49,7 @@ with st.container():
                     edit_composer,
                     edit_midi_path,
                     edit_audio_path,
-                    edit_order,
+                    edit_number,
                 )
                 st.success(f"Updated piece with ID {updated_piece.title}!")
                 st.session_state.last_clicked = None
@@ -66,10 +66,10 @@ with st.container():
             new_composer = st.text_input("Composer")
             new_midi_path = st.text_input("MIDI Path")
             new_audio_path = st.text_input("Audio Path")
-            new_order = st.number_input("Order", min_value=0)
+            new_number = st.number_input("number", min_value=0)
             if st.button("Add Piece"):
                 new_piece = insert_piece(
-                    new_title, new_composer, new_midi_path, new_audio_path, new_order
+                    new_title, new_composer, new_midi_path, new_audio_path, new_number
                 )
                 st.success(f"Added new piece with ID {new_piece.id}!")
                 st.session_state.last_clicked = None

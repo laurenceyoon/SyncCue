@@ -1,6 +1,6 @@
 from mongoengine import (
     Document,
-    EmbeddedDocument,  # mongoDB
+    EmbeddedDocument,
     EmbeddedDocumentListField,
     FloatField,
     IntField,
@@ -29,10 +29,10 @@ class Piece(Document):
     composer = StringField(required=True)
     midi_path = StringField(required=True)
     subpieces = EmbeddedDocumentListField(SubPiece)
-    order = IntField(required=True, default=0)
+    number = IntField(required=True, default=0)
 
     def __str__(self):
-        return f"Piece({self.title})"
+        return f"Piece({self.title}), number: {self.number}"
 
 
 # ================== CRUD ==================
@@ -46,24 +46,24 @@ def get_piece_by_id(piece_id):
     return Piece.objects(id=piece_id).first()
 
 
-def insert_piece(title, composer, midi_path, audio_path, order):
+def insert_piece(title, composer, midi_path, audio_path, number):
     piece = Piece(
         title=title,
         composer=composer,
         midi_path=midi_path,
         audio_path=audio_path,
-        order=order,
+        number=number,
     )
     piece.save()
     return piece
 
 
-def update_piece(piece_id, title, composer, midi_path, audio_path, order) -> Piece:
+def update_piece(piece_id, title, composer, midi_path, audio_path, number) -> Piece:
     piece = Piece.objects(id=piece_id).first()
     piece.title = title
     piece.composer = composer
     piece.midi_path = midi_path
     piece.audio_path = audio_path
-    piece.order = order
+    piece.number = number
     piece.save()
     return piece

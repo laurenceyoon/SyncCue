@@ -17,8 +17,8 @@ def handle_start(address, args=None):
     print(
         f"<== Received OSC message with {address}. Starting with arguments: {args, type(args)}"
     )
-    piece_order = int(args)
-    piece = Piece.objects(order=piece_order).first()
+    piece_number = int(args)
+    piece = Piece.objects(number=piece_number).first()
     send_osc_piece_info(piece.title, piece.composer)
     if piece.subpieces:
         subpieces = piece.subpieces

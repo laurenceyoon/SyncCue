@@ -27,7 +27,7 @@
       "end_time_margin": 0
     }
   ],
-  "order": 1
+  "number": 0
 },
 {
   "_id": {
@@ -36,5 +36,5 @@
   "title": "왕벌의 비행",
   "composer": "Nikolai Rimsky-Korsakov",
   "midi_path": "./resources/midi/startcue_ai_revised.mid",
-  "order": 2
+  "number": 1
 }]
