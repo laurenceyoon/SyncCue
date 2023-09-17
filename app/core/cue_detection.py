@@ -1,28 +1,16 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import cv2
-from scipy.signal import medfilt
-from scipy.signal import find_peaks
-import mido
-import time
-from .videocapture import VideoCaptureAsync
-from .midi_controller import play_midi_file
 import csv  # list를 csv 형태로 저장
 import os
-
-# ===== Client로써 Unity에게 신호 전송 =====
-import argparse
 import time
-from pythonosc import udp_client
 
-# =======Face Detection 추가 (0903)==============================================
+import cv2
 import mediapipe as mp
+import numpy as np
+from scipy.signal import find_peaks, medfilt
 
-mp_face_detection = mp.solutions.face_detection
-face_detection = mp_face_detection.FaceDetection(min_detection_confidence=0.1)
-# ==============================================================================
+from ..osc_client import send_osc_detect, send_osc_end, send_osc_start
+from .midi_controller import play_midi_file
+from .videocapture import VideoCaptureAsync
 
-# def process_video_capture(midi_file_path, port_index) in cue_performance.ipynb
 feature_params = dict(maxCorners=1000, qualityLevel=0.01, minDistance=10, blockSize=50)
 lk_params = dict(
     winSize=(15, 15),
@@ -30,18 +18,6 @@ lk_params = dict(
     criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03),
 )
 
-# file_num = 0  # midi_files_list 속 원소들의 index; 0:test_beethoven ~ 6:fermatacue_ai_3
-# midi_files_list = [
-#     "test_beethoven",
-#     "startcue_ai_original",
-#     "startcue_ai_revised",
-#     "fermatacue_ai_1",
-#     "fermatacue_ai_2",
-#     "fermatacue_ai_3",
-# ]
-# midi_file_path = "./resources/midi/" + midi_files_list[file_num] + ".mid"
-
-port_index = 0
 threshold_max = 1
 threshold_min = -1
 delay_adjust = 0.25
@@ -87,20 +63,7 @@ def cue_detection_start(title, midi_file_path):
     global time_stamp
     global y_vel_filt
     global cue
-    # ======OSC 통신========
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--ip", default="127.0.0.1", help="The ip of the OSC server")
-    parser.add_argument(
-        "--port", type=int, default=5005, help="The port the OSC server is listening on"
-    )
-    args = parser.parse_args()
-    client = udp_client.SimpleUDPClient(args.ip, args.port)
     # =====================
-
-    print(
-        f"MIDI Output Ports: {mido.get_output_names()}, selected: {mido.get_output_names()[port_index]}"
-    )
-    port = mido.open_output(mido.get_output_names()[port_index])
 
     cap = VideoCaptureAsync(0)
     cap.fps = 30  # set fps
@@ -118,7 +81,7 @@ def cue_detection_start(title, midi_file_path):
     cap.start_cache()
     start_time = cap.start_time
     print("Capture Started")
-    client.send_message("/start", 1)  # OSC 통신 (1) - Capture Start
+    send_osc_start()  # OSC 통신 (1) - Capture Start
     capture_first = False  # 6프레임부터 True로 변경
 
     n_frame = 0
@@ -126,6 +89,7 @@ def cue_detection_start(title, midi_file_path):
     y_mean_list = []
 
     # with문은 자원을 획득, 사용, 반납할 때 사용된다. 객체의 라이프사이클을 설계; with EXPRESSION [as VARIABLE]: BLOCK
+    mp_face_detection = mp.solutions.face_detection
     with mp_face_detection.FaceDetection(
         model_selection=0, min_detection_confidence=0.5
     ) as face_detection:
@@ -234,9 +198,8 @@ def cue_detection_start(title, midi_file_path):
                         cue[1] = mins[0] + min_start_index
                         print(f"Cue End detected: {cue[1]}")
                         if cue[1] and cue[0] != None:
-                            client.send_message(
-                                "/detect", str(cue[1] - cue[0])
-                            )  # OSC 통신 (2) - Detect
+                            send_osc_detect(cue[1] - cue[0])  # OSC 통신 (2) - Detect
+
                         write_cue_end(title)
                         break
 
@@ -260,10 +223,11 @@ def cue_detection_start(title, midi_file_path):
     if time_left > 0:
         print(f"Wait for {time_left:.2f} seconds")
         time.sleep(time_left)
-        play_midi_file(midi_file_path, port)
+        play_midi_file(midi_file_path)
     else:
         print("Cue already passed")
-        play_midi_file(midi_file_path, port)
+        play_midi_file(midi_file_path)
+    send_osc_end()  # OSC 통신 (3) - End of MIDI
     cap.stop_cache()
 
 

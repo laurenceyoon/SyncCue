@@ -26,3 +26,6 @@ class OSCUDPServer(DatagramProtocol):
             return func
 
         return decorator
+
+
+server = OSCUDPServer()

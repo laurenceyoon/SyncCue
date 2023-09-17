@@ -1,19 +1,16 @@
-from twisted.internet.protocol import DatagramProtocol
-from twisted.internet import reactor
+from pythonosc import udp_client
 
 
-class EchoClientUDP(DatagramProtocol):
-    def startProtocol(self):
-        self.transport.write(b"Hello, server!", ("127.0.0.1", 9999))
+client = udp_client.SimpleUDPClient("127.0.0.1", 5005)
 
-    def datagramReceived(self, datagram, address):
-        print(f"Received reply: {datagram.decode()}")
 
-class OSCUDPClient(DatagramProtocol):
-    def __init__(self):
-        self.handlers = {}
-    
-    
-# UDP 클라이언트 시작
-reactor.listenUDP(0, EchoClientUDP())  # 0은 OS에 무작위 포트 할당을 요청
-reactor.run()
+def send_osc_start():
+    client.send_message("/start", 1)
+
+
+def send_osc_detect(duration: float):
+    client.send_message("/detect", str(duration))
+
+
+def send_osc_end():
+    client.send_message("/end", 1)

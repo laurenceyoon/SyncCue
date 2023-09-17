@@ -1,12 +1,10 @@
 import argparse  # Python의 실행시에 커맨드 라인 인수를 다룰 때, ArgumentParser(argparse)를 사용하면 편리하다.
-from twisted.internet import reactor
-from .osc_server import OSCUDPServer
 from .core.cue_detection import cue_detection_start
 import subprocess
 from .database import Piece
 import time
-
-server = OSCUDPServer()  # self.handlers = {} 빈 딕셔너리
+from .osc_server import server
+from twisted.internet import reactor
 
 
 # add_handler 데코레이터는 인자로 address를 받고 self.handlers[address] = func를 수행한 뒤 func를 반환
@@ -20,11 +18,11 @@ def handle_start(address, args=None):
     if piece.subpieces:
         subpieces = piece.subpieces
         for subpiece in subpieces:
-            print(f"Cue detection Start for Subpiece {subpiece.midi_path}")
+            print(f"\nCue detection Start for Subpiece {subpiece.midi_path}")
             cue_detection_start(title=piece.title, midi_file_path=subpiece.midi_path)
             print(f"Subpiece {subpiece.midi_path} is done")
             time.sleep(subpiece.end_time_margin)
-            print(f"Subpiece {subpiece.end_time_margin} is done")
+            print(f"end_time_margin {subpiece.end_time_margin} is done")
     else:
         cue_detection_start(title=piece.title, midi_file_path=piece.midi_path)
 
@@ -59,5 +57,6 @@ if __name__ == "__main__":  # 직접 실행하게 되면 (% python -m app.main)
 
     if not args.no_dashboard:  # 만약 --no_dashboard가 인수로 존재하지 않았다면
         run_streamlit_app()  # Streamlit을 실행한다.
+
     reactor.listenUDP(9999, server)  # UDP; 포트9999를 listen
     reactor.run()  # 서버 구동
