@@ -1,7 +1,6 @@
 name: sync
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - altair=5.0.1=pyhd8ed1ab_1
   - anyio=3.7.1=pyhd8ed1ab_0
@@ -318,12 +317,13 @@ dependencies:
   - zope.interface=6.0=py311he2be06e_0
   - zstd=1.5.2=h4f39d0f_7
   - pip:
-    - absl-py==1.4.0
-    - flatbuffers==23.5.26
-    - mediapipe==0.10.3
-    - opencv-contrib-python==4.8.0.76
-    - opencv-python==4.8.0.76
-    - protobuf==3.20.3
-    - python-osc==1.8.3
-    - python-rtmidi==1.5.5
-    - sounddevice==0.4.6
+      - absl-py==1.4.0
+      - flatbuffers==23.5.26
+      - mediapipe==0.10.5
+      - opencv-contrib-python==4.8.0.76
+      - opencv-python==4.8.0.76
+      - protobuf==3.20.3
+      - python-osc==1.8.3
+      - python-rtmidi==1.5.5
+      - sounddevice==0.4.6
+prefix: /Users/jiyun/.pyenv/versions/mambaforge/envs/sync
