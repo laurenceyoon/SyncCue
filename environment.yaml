@@ -326,4 +326,3 @@ dependencies:
       - python-osc==1.8.3
       - python-rtmidi==1.5.5
       - sounddevice==0.4.6
-prefix: /Users/jiyun/.pyenv/versions/mambaforge/envs/sync
