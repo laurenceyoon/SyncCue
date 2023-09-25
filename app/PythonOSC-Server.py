@@ -17,7 +17,7 @@ if __name__ == "__main__":
   parser.add_argument("--ip",
       default="127.0.0.1", help="The ip to listen on")
   parser.add_argument("--port",
-      type=int, default=5005, help="The port to listen on")
+      type=int, default=5225, help="The port to listen on")
   args = parser.parse_args()
 
   dispatcher = Dispatcher()

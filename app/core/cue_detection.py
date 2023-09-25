@@ -81,7 +81,7 @@ def cue_detection_start(title, midi_file_path):
     cap.start_cache()
     start_time = cap.start_time
     print("Capture Started")
-    send_osc_start()  # OSC 통신 (1) - Capture Start
+    # capture start osc 보내주자!
     capture_first = False  # 6프레임부터 True로 변경
 
     n_frame = 0
@@ -123,6 +123,7 @@ def cue_detection_start(title, midi_file_path):
                             print(f"Face detected at {x}, {y}, {w}, {h}")
                             initial_rect = (x, y, w, h)  # Save the detected face area
                         print("** First frame captured **")
+                        send_osc_start()  # OSC 통신 (1) - Capture Start
                         capture_first = True
                         last_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                         # if initial_rect:
@@ -209,7 +210,7 @@ def cue_detection_start(title, midi_file_path):
         if cue[0] is None or cue[1] is None:
             print("Cue not detected")
             exit()
-
+    cap.stop_cache()
     # <end> of with문
 
     filter_delay = 2
@@ -228,7 +229,6 @@ def cue_detection_start(title, midi_file_path):
         print("Cue already passed")
         midi_controller.play(midi_file_path)
     send_osc_end()  # OSC 통신 (3) - End of MIDI
-    cap.stop_cache()
 
 
 # First Frame Capture
