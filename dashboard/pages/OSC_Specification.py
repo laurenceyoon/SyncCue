@@ -40,16 +40,14 @@ with st.container():
 
     with st.expander("/stop"):
         address = st.text_input("address", key="stop_address", value="/stop")
-        arguments = (
-            st.text_input("arguments", key="stop_arguments", value="[1]") or None
-        )
+        arguments = st.text_input("arguments", key="stop_arguments", value="1") or None
         if st.button("Send", key="stop_send", use_container_width=True):
             send_osc_msg(address, arguments)
 
     with st.expander("/playback"):
         address = st.text_input("address", key="playback_address", value="/playback")
         arguments = (
-            st.text_input("arguments", key="playback_arguments", value="") or None
+            st.text_input("arguments", key="playback_arguments", value="1-2") or None
         )
         if st.button("Send", key="playback_send", use_container_width=True):
             send_osc_msg(address, arguments)

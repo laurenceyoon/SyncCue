@@ -20,5 +20,9 @@ def send_osc_detect(duration):
     _send_osc_message("/detect", str(duration))
 
 
+def send_osc_playback(piece_number):
+    _send_osc_message("/playback", str(piece_number))
+
+
 def send_osc_end():
     _send_osc_message("/end", 1)

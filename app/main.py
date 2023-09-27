@@ -7,12 +7,11 @@ from twisted.internet import reactor
 from .core.cue_detection import cue_detection_start
 from .core.midi_controller import midi_controller
 from .database import Piece
-from .osc_client import send_osc_piece_info
+from .osc_client import send_osc_end, send_osc_piece_info, send_osc_playback
 from .osc_server import server
 
 
-# add_handler 데코레이터는 인자로 address를 받고 self.handlers[address] = func를 수행한 뒤 func를 반환
-@server.add_handler("/start")  # 데코레이터는 함수를 수정하지 않은 상태에서 추가 기능을 구현할 때 사용
+@server.add_handler("/start")
 def handle_start(address, args=None):
     print(
         f"<== Received OSC message with {address}. Starting with arguments: {args, type(args)}"
@@ -35,7 +34,7 @@ def handle_start(address, args=None):
 @server.add_handler("/stop")
 def handle_stop(address, args=None):
     print(
-        f"Received OSC message with {address}. Stopping with arguments: {args, type(args)}"
+        f"<== Received OSC message with {address}. Stopping with arguments: {args, type(args)}"
     )
     midi_controller.stop_midi()
 
@@ -43,13 +42,23 @@ def handle_stop(address, args=None):
 @server.add_handler("/playback")
 def handle_playback(address, args=None):
     print(
-        f"Received OSC message with {address}. Playback with arguments: {args, type(args)}"
+        f"<== Received OSC message with {address}. Playback with arguments: {args, type(args)}"
     )
+    send_osc_playback(args)
+    piece_info = args.split("-")
+    piece_number = int(piece_info[0])
+    piece = Piece.objects(number=piece_number).first()
+    if len(piece_info) > 1 and piece.subpieces:  # subpiece 가 있는 경우, 예를 들어 args가 '1-2'
+        subpiece_number = int(piece_info[1])
+        subpiece = piece.subpieces[subpiece_number]
+        midi_controller.play(midi_file_path=subpiece.midi_path)
+    else:
+        midi_controller.play(midi_file_path=piece.midi_path)
+    send_osc_end()
 
 
-def run_streamlit_app():  # Subprocess로 Streamlit을 실행한다. (forntend/Home.py 파일)
+def run_streamlit_app():
     subprocess.Popen(["streamlit", "run", "dashboard/Home.py"])
-    # Streamlit은 간단하게 파이썬 코드로 앱을 빌드할 수 있고, 인터랙티브한 기능을 제공한다.
     # Streamlit의 default local URL은 http://localhost:8501/이다.
 
 
