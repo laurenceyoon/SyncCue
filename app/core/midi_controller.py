@@ -15,6 +15,7 @@ class MidiController:
         mid = mido.MidiFile(midi_file_path)
         for msg in mid.play():
             self.outport.send(msg)
+        self.stop_midi()
 
     def stop_midi(self):
         self.outport.panic()

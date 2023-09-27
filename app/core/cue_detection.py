@@ -200,7 +200,6 @@ def cue_detection_start(title, midi_file_path):
                         print(f"Cue End detected: {cue[1]}")
                         if cue[1] and cue[0]:
                             send_osc_detect(cue[1] - cue[0])  # OSC 통신 (2) - Detect
-
                         write_cue_end(title)
                         break
 
@@ -220,7 +219,7 @@ def cue_detection_start(title, midi_file_path):
     cur_time = time.perf_counter() - start_time
 
     time_left = cue_est - cur_time - delay_adjust
-
+    # send_osc_detect(time_left)  # 여기로 옮겨야하지 않나?!
     if time_left > 0:
         print(f"Wait for {time_left:.2f} seconds")
         time.sleep(time_left)
