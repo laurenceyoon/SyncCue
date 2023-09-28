@@ -13,6 +13,7 @@ class MidiController:
 
     def play(self, midi_file_path):
         mid = mido.MidiFile(midi_file_path)
+        print(f"Play MIDI file: {midi_file_path}")
         for msg in mid.play():
             self.outport.send(msg)
         # self.stop_midi()

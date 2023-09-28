@@ -23,6 +23,7 @@ threshold_max = 1
 threshold_min = -1
 delay_adjust = 0
 await_frames = 20
+system_delay = 0.25
 
 # ==============Client로써 전달할 정보들을 불러오기 위해 전역변수와 함수를 정의============
 time_stamp = np.ndarray([])
@@ -65,6 +66,10 @@ def cue_detection_start(title, midi_file_path):
     global y_vel_filt
     global cue
     # =====================
+    time_stamp = np.ndarray([])
+    y_vel = np.ndarray([])
+    y_vel_filt = np.ndarray([])
+    cue = [None, None]
 
     cap = VideoCaptureAsync(0)
     cap.fps = 30  # set fps
@@ -201,10 +206,15 @@ def cue_detection_start(title, midi_file_path):
                     if len(mins) >= 1:
                         # end cue detected
                         cue[1] = mins[0] + min_start_index
-
+                        time_delay = time_stamps[-1] - time_stamps[cue[1]]
                         print(f"Cue End detected: {cue[1]}")
+                        print(f"time_delay: {time_delay}")
                         if cue[1] and cue[0]:
-                            send_osc_detect(cue[1] - cue[0])  # OSC 통신 (2) - Detect
+                            send_osc_detect(
+                                ((cue[1] - cue[0]) * 1 / cap.fps)
+                                - time_delay
+                                - system_delay
+                            )  # OSC 통신 (2) - Detect
                         write_cue_end(title)
                         break
 
@@ -215,7 +225,6 @@ def cue_detection_start(title, midi_file_path):
             print("Cue not detected")
             exit()
     cap.stop_cache()
-    cap.cap.release()
     # <end> of with문
 
     filter_delay = 2
@@ -233,6 +242,8 @@ def cue_detection_start(title, midi_file_path):
         print("Cue already passed")
         midi_controller.play(midi_file_path)
     send_osc_end()  # OSC 통신 (3) - End of MIDI
+
+    # cap.cap.release()
 
 
 # First Frame Capture
