@@ -1,5 +1,6 @@
 import streamlit as st
 from pythonosc import udp_client
+import pandas as pd
 
 
 def send_osc_msg(address, arguments):
@@ -14,7 +15,7 @@ def send_osc_msg(address, arguments):
 
 # ====================================
 
-st.title("OSC Specification")
+st.title("Normal Server (9999)")
 
 # Basic Info
 with st.container():
@@ -46,9 +47,7 @@ with st.container():
 
     with st.expander("/playback"):
         address = st.text_input("address", key="playback_address", value="/playback")
-        arguments = (
-            st.text_input("arguments", key="playback_arguments", value="1-2") or None
-        )
+        arguments = (st.text_input("arguments", key="playback_arguments", value="1-2") or None)
         if st.button("Send", key="playback_send", use_container_width=True):
             send_osc_msg(address, arguments)
 

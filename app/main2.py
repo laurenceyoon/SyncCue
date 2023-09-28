@@ -58,7 +58,7 @@ def handle_playback(address, args=None):
 
 
 def run_streamlit_app():
-    subprocess.Popen(["streamlit", "run", "dashboard/Home.py"])
+    subprocess.Popen(["streamlit", "run", "dashboard2/Home.py"])
     # Streamlit의 default local URL은 http://localhost:8501/이다.
 
 
@@ -73,6 +73,6 @@ if __name__ == "__main__":  # 직접 실행하게 되면 (% python -m app.main)
     if not args.no_dashboard:  # 만약 --no_dashboard가 인수로 존재하지 않았다면
         run_streamlit_app()  # Streamlit을 실행한다.
 
-    reactor.listenUDP(9999, server)  # UDP; 포트9999를 listen
+    reactor.listenUDP(8888, server)  # UDP; 포트9999를 listen
     reactor.run()  # 서버 구동
 

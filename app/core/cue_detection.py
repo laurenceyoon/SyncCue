@@ -197,6 +197,7 @@ def cue_detection_start(title, midi_file_path):
                     if len(mins) >= 1:
                         # end cue detected
                         cue[1] = mins[0] + min_start_index
+                        
                         print(f"Cue End detected: {cue[1]}")
                         if cue[1] and cue[0]:
                             send_osc_detect(cue[1] - cue[0])  # OSC 통신 (2) - Detect
