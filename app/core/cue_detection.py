@@ -1,4 +1,5 @@
 import csv
+import datetime
 import os
 import time
 
@@ -20,7 +21,7 @@ lk_params = dict(
 
 threshold_max = 1
 threshold_min = -1
-delay_adjust = 0.25
+delay_adjust = 0
 await_frames = 20
 
 # ==============Client로써 전달할 정보들을 불러오기 위해 전역변수와 함수를 정의============
@@ -72,7 +73,10 @@ def cue_detection_start(title, midi_file_path):
     # Initialize VideoWriter
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")  # or use 'XVID'
     out = cv2.VideoWriter(
-        "output_video_0831.mp4", fourcc, 30.0, (640, 480)
+        f"output_video_{datetime.datetime.now().isoformat()}.mp4",
+        fourcc,
+        30.0,
+        (640, 480),
     )  # Assuming frame size is 640x480, and FPS is 30
     initial_rect = None  # New variable to hold the detected face area
 
@@ -197,7 +201,7 @@ def cue_detection_start(title, midi_file_path):
                     if len(mins) >= 1:
                         # end cue detected
                         cue[1] = mins[0] + min_start_index
-                        
+
                         print(f"Cue End detected: {cue[1]}")
                         if cue[1] and cue[0]:
                             send_osc_detect(cue[1] - cue[0])  # OSC 통신 (2) - Detect
@@ -211,6 +215,7 @@ def cue_detection_start(title, midi_file_path):
             print("Cue not detected")
             exit()
     cap.stop_cache()
+    cap.cap.release()
     # <end> of with문
 
     filter_delay = 2
@@ -220,7 +225,6 @@ def cue_detection_start(title, midi_file_path):
     cur_time = time.perf_counter() - start_time
 
     time_left = cue_est - cur_time - delay_adjust
-    # send_osc_detect(time_left)  # 여기로 옮겨야하지 않나?!
     if time_left > 0:
         print(f"Wait for {time_left:.2f} seconds")
         time.sleep(time_left)

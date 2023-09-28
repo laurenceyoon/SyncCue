@@ -75,4 +75,3 @@ if __name__ == "__main__":  # 직접 실행하게 되면 (% python -m app.main)
 
     reactor.listenUDP(8888, server)  # UDP; 포트9999를 listen
     reactor.run()  # 서버 구동
-
