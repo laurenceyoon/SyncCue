@@ -39,8 +39,20 @@ with st.container():
     st.subheader("OSC In")
     osc_client = udp_client.SimpleUDPClient(OSC_SERVER_IP, OSC_SERVER_PORT)
 
+    # OSC Message List
+    
+    with st.expander("/intro"): # Intro (Call the drones on the stage)
+        address = st.text_input("address", key="intro_address", value="/intro")
+        if st.button("Send", key="intro_send", use_container_width=True):
+            send_osc_msg(address)
+            
     with st.expander("/playback"):
         address = st.text_input("Token", key="playback_address", value="/playback")
         arguments = st.text_input("ID", key="playback_arguments", value="1-2") or None
         if st.button("Send", key="playback_send", use_container_width=True):
             send_osc_msg(address, arguments)
+            
+    with st.expander("/outro"): # Outro (Finale; Firework)
+        address = st.text_input("address", key="outro_address", value="/outro")
+        if st.button("Send", key="outro_send", use_container_width=True):
+            send_osc_msg(address)    
