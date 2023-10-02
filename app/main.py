@@ -1,35 +1,40 @@
 import argparse
+import asyncio
 import subprocess
 
 from twisted.internet import asyncioreactor
 
-from app.core.helpers import cue_detection_start_for_piece, all_stop_playing
-from app.core.helpers import playback_for_piece
+from app.core.helpers import (
+    all_stop_playing,
+    cue_detection_start_for_piece,
+    playback_start_for_piece,
+)
 
 asyncioreactor.install()
 from twisted.internet import reactor
 
-from .osc_client import (
-    send_osc_intro,
-    send_osc_outro,
-)
-from .osc_server import server
-from .config import OSC_SERVER_PORT
+from app.config import OSC_SERVER_PORT
+from app.osc_client import send_osc_intro, send_osc_outro
+from app.osc_server import server
+
+
+async def run_in_background(func, *args, **kwargs):
+    return await asyncio.to_thread(func, *args, **kwargs)
 
 
 @server.add_handler("/start")
 async def handle_start(address, args):
-    await cue_detection_start_for_piece(args)
+    await run_in_background(cue_detection_start_for_piece, args)
+
+
+@server.add_handler("/playback")
+async def handle_playback(address, args=None):
+    await run_in_background(playback_start_for_piece, args)
 
 
 @server.add_handler("/stop")
 async def handle_stop(address, args=None):
     all_stop_playing()
-
-
-@server.add_handler("/playback")
-async def handle_playback(address, args=None):
-    playback_for_piece(args)
 
 
 @server.add_handler("/intro")

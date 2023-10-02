@@ -12,11 +12,11 @@ def send_osc_msg(address, arguments=""):
     st.toast("Done!", icon="✅")
 
 
-st.title("Normal Server (9999)")
+st.title("SyncCue")
 
 # Basic Info
 with st.container():
-    st.subheader("Basic OSC Configuration")
+    st.subheader("[MACLab] KAIST AI Pianist with 최나경")
     col1, col2 = st.columns(2)
     with col1:
         OSC_SERVER_IP = st.text_input("OSC Server IP", "192.168.0.20")

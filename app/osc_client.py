@@ -1,6 +1,6 @@
 from pythonosc import udp_client
 
-from .config import OSC_SERVER_IP, OSC_SERVER_PORT
+from app.config import OSC_SERVER_IP, OSC_SERVER_PORT
 
 client = udp_client.SimpleUDPClient(OSC_SERVER_IP, OSC_SERVER_PORT)
 
