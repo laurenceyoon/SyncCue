@@ -19,7 +19,7 @@ with st.container():
     st.subheader("Basic OSC Configuration")
     col1, col2 = st.columns(2)
     with col1:
-        OSC_SERVER_IP = st.text_input("OSC Server IP", "127.0.0.1")
+        OSC_SERVER_IP = st.text_input("OSC Server IP", "192.168.0.20")
     with col2:
         OSC_SERVER_PORT = int(st.text_input("OSC Server Port", 9999))
 
@@ -28,14 +28,14 @@ with st.container():
     st.subheader("OSC In")
     osc_client = udp_client.SimpleUDPClient(OSC_SERVER_IP, OSC_SERVER_PORT)
     st.caption("Choose an OSC message to send:")
-            
+
     # OSC Message List
-    
-    with st.expander("/intro"): # Intro (Call the drones on the stage)
+
+    with st.expander("/intro"):  # Intro (Call the drones on the stage)
         address = st.text_input("address", key="intro_address", value="/intro")
         if st.button("Send", key="intro_send", use_container_width=True):
             send_osc_msg(address)
-            
+
     with st.expander("/start"):
         address = st.text_input("address", key="start_address", value="/start")
         arguments = st.text_input("arguments", key="start_arguments", value="0") or None
@@ -56,7 +56,7 @@ with st.container():
         if st.button("Send", key="playback_send", use_container_width=True):
             send_osc_msg(address, arguments)
 
-    with st.expander("/outro"): # Outro (Finale; Firework)
+    with st.expander("/outro"):  # Outro (Finale; Firework)
         address = st.text_input("address", key="outro_address", value="/outro")
         if st.button("Send", key="outro_send", use_container_width=True):
             send_osc_msg(address)

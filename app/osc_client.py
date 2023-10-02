@@ -1,6 +1,6 @@
 from pythonosc import udp_client
 
-client = udp_client.SimpleUDPClient("127.0.0.1", 5225)
+client = udp_client.SimpleUDPClient("192.168.0.20", 5225)
 
 
 def _send_osc_message(address, args):
@@ -11,9 +11,11 @@ def _send_osc_message(address, args):
 def send_osc_piece_info(title, composer):
     _send_osc_message("/piece_info", [title, composer])
 
+
 def send_osc_intro():
     _send_osc_message("/intro", "")
-    
+
+
 def send_osc_outro():
     _send_osc_message("/outro", "")
 

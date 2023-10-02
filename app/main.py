@@ -7,7 +7,13 @@ from twisted.internet import reactor
 from .core.cue_detection import cue_detection_start
 from .core.midi_controller import midi_controller
 from .database import Piece
-from .osc_client import send_osc_end, send_osc_piece_info, send_osc_playback, send_osc_intro, send_osc_outro
+from .osc_client import (
+    send_osc_end,
+    send_osc_piece_info,
+    send_osc_playback,
+    send_osc_intro,
+    send_osc_outro,
+)
 from .osc_server import server
 
 
@@ -30,15 +36,18 @@ def handle_start(address, args=None):
     else:
         cue_detection_start(title=piece.title, midi_file_path=piece.midi_path)
 
+
 @server.add_handler("/intro")
 def handle_intro(address, args=None):
     print("Intro Start; Command Unity to Start the INTRO Animation.")
     send_osc_intro()
-    
+
+
 @server.add_handler("/outro")
 def handle_intro(address, args=None):
     print("Outro Start; Command Unity to Start the OUTRO Animation.")
     send_osc_outro()
+
 
 @server.add_handler("/stop")
 def handle_stop(address, args=None):
@@ -71,16 +80,15 @@ def run_streamlit_app():
     # Streamlit의 default local URL은 http://localhost:8501/이다.
 
 
-if __name__ == "__main__":  # 직접 실행하게 되면 (% python -m app.main)
-    parser = argparse.ArgumentParser()  # 인수 parser를 만든다.
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
     parser.add_argument(
         "--no-dashboard", action="store_true", help="Run server without dashboard"
-    )  # parser.add_argument로 받아들일 인수를 추가해 나감; 옵션 인수는 -- 이렇게 이름 앞에 더해주자
+    )
+    args = parser.parse_args()
 
-    args = parser.parse_args()  # 커맨드라인의 인수를 분석
-
-    if not args.no_dashboard:  # 만약 --no_dashboard가 인수로 존재하지 않았다면
-        run_streamlit_app()  # Streamlit을 실행한다.
+    if not args.no_dashboard:
+        run_streamlit_app()
 
     reactor.listenUDP(9999, server)  # UDP; 포트9999를 listen
-    reactor.run()  # 서버 구동
+    reactor.run()
