@@ -21,7 +21,7 @@ lk_params = dict(
 
 threshold_max = 1
 threshold_min = -1
-delay_adjust = 0
+delay_adjust = 0.2
 await_frames = 20
 system_delay = 0.25
 
@@ -207,13 +207,16 @@ def cue_detection_start(title, midi_file_path):
                         # end cue detected
                         cue[1] = mins[0] + min_start_index
                         time_delay = time_stamps[-1] - time_stamps[cue[1]]
-                        print(f"Cue End detected: {cue[1]}")
+                        print(f"Cue End detected! cue[1]: {cue[1]}, cue[0]: {cue[0]}")
                         print(f"time_delay: {time_delay}")
+                        # cue_time = ((cue[1] - cue[0]) * 1 / cap.fps)
+                        cue_time = time_stamps[cue[1]] - time_stamps[cue[0]]
+                        print(
+                            f"cue_time: {cue_time}, time_stamps[cue[1]]: {time_stamps[cue[1]]}, time_stamps[cue[0]]: {time_stamps[cue[0]]}"
+                        )
                         if cue[1] and cue[0]:
                             send_osc_detect(
-                                ((cue[1] - cue[0]) * 1 / cap.fps)
-                                - time_delay
-                                - system_delay
+                                cue_time - time_delay - system_delay
                             )  # OSC 통신 (2) - Detect
                         write_cue_end(title)
                         break
