@@ -33,7 +33,7 @@
   "_id": {
     "$oid": "6505d3cef877599e38c0a6a7"
   },
-  "title": "왕벌의 비행",
+  "title": "Flight of Bumblebee",
   "composer": "Nikolai Rimsky-Korsakov",
   "midi_path": "./resources/midi/startcue_ai_revised.mid",
   "number": 2
@@ -42,7 +42,7 @@
   "_id": {
     "$oid": "6513aca9134b16542f983276"
   },
-  "title": "반짝반짝 작은 별",
+  "title": "Twinkle Twinkle Little Star",
   "composer": "Mozart",
   "midi_path": "./resources/midi/twinkle.mid",
   "subpieces": [],
