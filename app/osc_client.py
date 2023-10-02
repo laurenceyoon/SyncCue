@@ -11,6 +11,8 @@ def _send_osc_message(address, args):
 def send_osc_piece_info(title, composer):
     _send_osc_message("/piece_info", [title, composer])
 
+def send_osc_intro():
+    _send_osc_message("/intro", "")
 
 def send_osc_start():
     _send_osc_message("/start", 1)

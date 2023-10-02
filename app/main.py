@@ -7,7 +7,7 @@ from twisted.internet import reactor
 from .core.cue_detection import cue_detection_start
 from .core.midi_controller import midi_controller
 from .database import Piece
-from .osc_client import send_osc_end, send_osc_piece_info, send_osc_playback
+from .osc_client import send_osc_end, send_osc_piece_info, send_osc_playback, send_osc_intro
 from .osc_server import server
 
 
@@ -30,6 +30,10 @@ def handle_start(address, args=None):
     else:
         cue_detection_start(title=piece.title, midi_file_path=piece.midi_path)
 
+@server.add_handler("/intro")
+def handle_intro(address, args=None):
+    print("Intro Start; Command Unity to Start the Animation.")
+    send_osc_intro()
 
 @server.add_handler("/stop")
 def handle_stop(address, args=None):

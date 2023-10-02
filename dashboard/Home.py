@@ -2,7 +2,7 @@ import streamlit as st
 from pythonosc import udp_client
 
 
-def send_osc_msg(address, arguments):
+def send_osc_msg(address, arguments=""):
     osc_client.send_message(address, arguments)
     st.text_area(
         label="Log message",
@@ -28,8 +28,14 @@ with st.container():
     st.subheader("OSC In")
     osc_client = udp_client.SimpleUDPClient(OSC_SERVER_IP, OSC_SERVER_PORT)
     st.caption("Choose an OSC message to send:")
-
+            
     # OSC Message List
+    
+    with st.expander("/intro"): # Intro (Call the drones on the stage)
+        address = st.text_input("address", key="intro_address", value="/intro")
+        if st.button("Send", key="intro_send", use_container_width=True):
+            send_osc_msg(address)
+            
     with st.expander("/start"):
         address = st.text_input("address", key="start_address", value="/start")
         arguments = st.text_input("arguments", key="start_arguments", value="0") or None
@@ -49,3 +55,8 @@ with st.container():
         )
         if st.button("Send", key="playback_send", use_container_width=True):
             send_osc_msg(address, arguments)
+
+    with st.expander("/outro"): # Outro (Finale; Firework)
+        address = st.text_input("address", key="outro_address", value="/outro")
+        if st.button("Send", key="outro_send", use_container_width=True):
+            send_osc_msg(address)
