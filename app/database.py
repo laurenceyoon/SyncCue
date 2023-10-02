@@ -7,9 +7,7 @@ from mongoengine import (
     StringField,
     connect,
 )
-
-MONGODB_HOST = "0.0.0.0"
-MONGODB_PORT = 27017
+from .config import MONGODB_HOST, MONGODB_PORT
 
 connect("synccue", host=MONGODB_HOST, port=MONGODB_PORT)
 

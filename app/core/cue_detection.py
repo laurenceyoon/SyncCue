@@ -209,7 +209,6 @@ def cue_detection_start(title, midi_file_path):
                         time_delay = time_stamps[-1] - time_stamps[cue[1]]
                         print(f"Cue End detected! cue[1]: {cue[1]}, cue[0]: {cue[0]}")
                         print(f"time_delay: {time_delay}")
-                        # cue_time = ((cue[1] - cue[0]) * 1 / cap.fps)
                         cue_time = time_stamps[cue[1]] - time_stamps[cue[0]]
                         print(
                             f"cue_time: {cue_time}, time_stamps[cue[1]]: {time_stamps[cue[1]]}, time_stamps[cue[0]]: {time_stamps[cue[0]]}"
@@ -247,12 +246,3 @@ def cue_detection_start(title, midi_file_path):
     send_osc_end()  # OSC 통신 (3) - End of MIDI
 
     # cap.cap.release()
-
-
-# First Frame Capture
-# Estimate Note Onset (Min Peak)
-# Note Onset
-
-# First Frame 시그널 (bool)
-# Min Peak + 차오르는 시간 (bool + float)
-# MIDI Off (0.몇초 전) -> 지윤누나

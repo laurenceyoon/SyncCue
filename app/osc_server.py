@@ -1,5 +1,6 @@
 from pythonosc.osc_packet import OscPacket
 from twisted.internet.protocol import DatagramProtocol
+import asyncio
 
 
 class OSCUDPServer(DatagramProtocol):
@@ -11,11 +12,21 @@ class OSCUDPServer(DatagramProtocol):
         print(f"OSC Server is running on {local_endpoint.host}:{local_endpoint.port}")
 
     def datagramReceived(self, datagram, address):
+        loop = asyncio.get_event_loop()
+        loop.call_soon(
+            asyncio.create_task, self._async_datagramReceived(datagram, address)
+        )
+
+    async def _async_datagramReceived(self, datagram, address):
         parsed_packet = OscPacket(datagram)
         for msg in parsed_packet.messages:
             handler = self.handlers.get(msg.message.address)
             if handler:
-                handler(msg.message.address, *msg.message.params)
+                print(
+                    f"<== Received OSC message with {address}{msg.message.address} "
+                    f"With arguments: {*msg.message.params, type(*msg.message.params)}"
+                )
+                await handler(msg.message.address, *msg.message.params)
 
     def handle_default(self, address, args):
         print(f"Unknown address: {address} with arguments: {args}")
