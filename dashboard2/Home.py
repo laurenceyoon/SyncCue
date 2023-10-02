@@ -3,7 +3,7 @@ import pandas as pd
 from pythonosc import udp_client
 
 
-def send_osc_msg(address, arguments):
+def send_osc_msg(address, arguments=""):
     osc_client.send_message(address, arguments)
     st.text_area(
         label="Log message",
