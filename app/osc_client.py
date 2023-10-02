@@ -9,7 +9,7 @@ def _send_osc_message(address, args):
     client.send_message(address, args)
     print(
         f"==> Sent OSC message with {OSC_SERVER_IP}:{OSC_SERVER_PORT}{address} "
-        f"With arguments: {args, type(args)}"
+        f"with arguments: {args, type(args)}"
     )
 
 

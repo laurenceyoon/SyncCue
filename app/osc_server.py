@@ -28,7 +28,7 @@ class OSCUDPServer(DatagramProtocol):
             if handler:
                 print(
                     f"\n<== Received OSC message with {address[0]}:{address[1]}{msg.message.address} "
-                    f"With arguments: {*msg.message.params, type(*msg.message.params)}, datagram packet: {datagram}"
+                    f"with arguments: {*msg.message.params, type(*msg.message.params)}, datagram packet: {datagram}"
                 )
                 await handler(msg.message.address, *msg.message.params)
 

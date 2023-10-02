@@ -41,30 +41,27 @@ class StateMachine:
             dest="asleep",
             before="broadcast_and_panic_stop",
         )
-        self.machine.add_transition(
-            trigger="trigger_playback",
-            source="asleep",
-            dest="playback",
-            before="broadcast_stop",
-        )
+
+    def is_awake(self):
+        return self.state != "asleep"
 
     def is_next_schedule_exist(self):
         return len(self.schedules) > 0
 
     def transit_to_cue_detect(self):
         print(
-            f"\nCue detect Start r current schedule {self.current_schedule.midi_path}"
+            f"\nCue detect Start current schedule {self.current_schedule}, remaining schedules({self.schedules})"
         )
         cue_detector.start(
             title=self.piece.title, midi_file_path=self.current_schedule.midi_path
         )
         print(f"Current schedule {self.current_schedule.midi_path} is done")
-        self.broadcast_stop()
         self.move_to_next()
 
     def move_to_next(self):
         if self.is_next_schedule_exist():
             self.current_schedule = self.schedules.popleft()
+            self.broadcast_stop()
             self.trigger_start()
         else:
             self.trigger_stop()
@@ -73,16 +70,18 @@ class StateMachine:
         cue_detector.stop_detecting()
         if subpiece_number:
             subpiece = self.piece.subpieces[subpiece_number]
+            print(f"\nPlayback current SubPiece schedule {subpiece.midi_path}")
             midi_controller.play(midi_file_path=subpiece.midi_path)
         else:
+            print(f"\ncurrent schedule {self.current_schedule.midi_path}")
             midi_controller.play(midi_file_path=self.current_schedule.midi_path)
-        send_osc_end()
+        self.broadcast_stop()
 
     def broadcast_stop(self):
         print("** 🛑 Stop all playing **")
-        send_osc_end()
+        send_osc_end()  # OSC 통신 (3) - End of MIDI
 
     def broadcast_and_panic_stop(self):
-        print("** 🛑🛑 [FORCE] Stop all playing (panic) 🛑🛑 **")
-        send_osc_end()
         midi_controller.stop_midi()
+        self.broadcast_stop()
+        print("** 🛑🛑 [FORCE] Stop all playing (panic) 🛑🛑 **")

@@ -5,7 +5,6 @@ port_index = 0
 
 class MidiController:
     def __init__(self):
-        self.outport = None
         self.outport = mido.open_output()
         self.is_running = False
 
@@ -16,6 +15,9 @@ class MidiController:
         for msg in mid.play():
             if self.is_running:
                 self.outport.send(msg)
+            else:
+                print("Stop sending MIDI messages!")
+                return
 
     def stop_midi(self):
         self.outport.panic()

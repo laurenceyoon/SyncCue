@@ -12,17 +12,24 @@ from app.config import (
     AWAIT_FRAMES,
     THRESHOLD_MAX,
     THRESHOLD_MIN,
+    FPS,
 )
 from app.core.midi_controller import midi_controller
 from app.core.videocapture import VideoCaptureAsync
 from app.osc_client import send_osc_detect, send_osc_end, send_osc_start
 
-feature_params = dict(maxCorners=1000, qualityLevel=0.01, minDistance=10, blockSize=50)
-lk_params = dict(
-    winSize=(15, 15),
-    maxLevel=2,
-    criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03),
-)
+
+FEATURE_PARAMS = {
+    "maxCorners": 1000,
+    "qualityLevel": 0.01,
+    "minDistance": 10,
+    "blockSize": 50,
+}
+LK_PARAMS = {
+    "winSize": (15, 15),
+    "maxLevel": 2,
+    "criteria": (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03),
+}
 
 
 class CueDetector:
@@ -43,18 +50,17 @@ class CueDetector:
         self.is_running = True
 
         cap = VideoCaptureAsync(0)
-        cap.fps = 30  # set fps
+        cap.fps = FPS
         cap.start_cache()  # 비디오 캡처 시작
         start_time = cap.start_time  # 시작 시간 기록
         # Initialize VideoWriter
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")  # or use 'XVID'
+        video_path = (
+            f"./resources/output_video_{datetime.datetime.now().isoformat()}.mp4"
+        )
         out = cv2.VideoWriter(
-            f"output_video_{datetime.datetime.now().isoformat()}.mp4",
-            fourcc,
-            30.0,
-            (640, 480),
+            video_path, fourcc, 30.0, (640, 480)
         )  # Assuming frame size is 640x480, and FPS is 30
-        initial_rect = None  # New variable to hold the detected face area
 
         print(f"FPS:{cap.fps}. Wait for webcam..., Press q to exit")
         time.sleep(2)
@@ -104,21 +110,12 @@ class CueDetector:
                                     int(bboxC.height * ih),
                                 )
                                 print(f"Face detected at {x}, {y}, {w}, {h}")
-                                initial_rect = (
-                                    x,
-                                    y,
-                                    w,
-                                    h,
-                                )  # Save the detected face area
                             print("** 🟡 First frame captured **")
                             send_osc_start()  # OSC 통신 (1) - Capture Start
                             capture_first = True
                             last_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                            # if initial_rect:
-                            x, y, w, h = initial_rect
                             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
-                            p0 = cv2.goodFeaturesToTrack(last_frame, **feature_params)
+                            p0 = cv2.goodFeaturesToTrack(last_frame, **FEATURE_PARAMS)
                             # remove features outside the face area
                             p0 = p0[
                                 (p0[:, 0, 0] > x)
@@ -139,7 +136,7 @@ class CueDetector:
                     n_frame += 1
                     current_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                     p1, st, err = cv2.calcOpticalFlowPyrLK(
-                        last_frame, current_frame, p0, None, **lk_params
+                        last_frame, current_frame, p0, None, **LK_PARAMS
                     )
                     if p1 is not None:
                         good_new = p1[st == 1]
@@ -215,7 +212,7 @@ class CueDetector:
         # <end> of with문
 
         self.play_midi_with_time_calculation(start_time, time_stamps)
-        send_osc_end()
+        # send_osc_end()
 
     def play_midi_with_time_calculation(self, start_time, time_stamps):
         filter_delay = 2
@@ -231,7 +228,7 @@ class CueDetector:
             midi_controller.play(self.midi_file_path)
         else:
             print("Cue already passed")
-            midi_controller.play(self.midi_file_path)  # OSC 통신 (3) - End of MIDI
+            midi_controller.play(self.midi_file_path)
 
     def stop_detecting(self):
         print("Stop Cue Detection")

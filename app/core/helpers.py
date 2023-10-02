@@ -19,11 +19,6 @@ def cue_detection_start_for_piece(piece_id):
     state_machine.trigger_start()
 
 
-def all_stop_playing():
-    if state_machine is not None:
-        state_machine.force_stop()
-
-
 def playback_start_for_piece(piece_num):
     global state_machine
     send_osc_playback(piece_num)
@@ -31,7 +26,7 @@ def playback_start_for_piece(piece_num):
     piece_number = int(piece_info[0])
     piece = Piece.objects(number=piece_number).first()
 
-    if state_machine is not None:
+    if state_machine is not None and state_machine.is_awake():
         state_machine.force_stop()
     state_machine = load_state_machine_for_performance(piece)
 
@@ -42,3 +37,8 @@ def playback_start_for_piece(piece_num):
         state_machine.playback_start(subpiece_number=subpiece_number)
     else:
         state_machine.playback_start()
+
+
+def all_stop_playing():
+    if state_machine is not None:
+        state_machine.force_stop()
