@@ -9,12 +9,14 @@ from app.core.midi_controller import midi_controller
 class StateMachine:
     states = ["asleep", "cue_detect", "playback"]
 
-    def __init__(self, piece: Piece) -> None:
+    def __init__(self, piece: Piece, start_from=0) -> None:
         self.piece = piece
         if piece.subpieces:
             self.schedules = deque(piece.subpieces)
         else:
             self.schedules = deque([piece])  # schedule은 subpieces 일 수도, 하나의 piece 일 수도
+        for _ in range(start_from):
+            self.schedules.popleft()
         self.current_schedule = self.schedules.popleft()
         self.machine = Machine(model=self, states=StateMachine.states, initial="asleep")
         self.machine.add_transition(
@@ -41,6 +43,7 @@ class StateMachine:
             dest="asleep",
             before="broadcast_and_panic_stop",
         )
+        self.force_quit_flag = False
 
     def is_awake(self):
         return self.state != "asleep"
@@ -49,39 +52,41 @@ class StateMachine:
         return len(self.schedules) > 0
 
     def transit_to_cue_detect(self):
+        if self.force_quit_flag:
+            return
         print(
             f"\nCue detect Start current schedule {self.current_schedule}, remaining schedules({self.schedules})"
         )
+        self.force_quit_flag = False
         cue_detector.start(
             title=self.piece.title, midi_file_path=self.current_schedule.midi_path
         )
         print(f"Current schedule {self.current_schedule.midi_path} is done")
         self.move_to_next()
 
+    def broadcast_stop(self):
+        print("** 🛑 Stop all playing **")
+        send_osc_end()
+
+    def transit_to_playback(self):
+        cue_detector.stop_detecting()
+        midi_controller.play(midi_file_path=self.current_schedule.midi_path)
+        if self.force_quit_flag:
+            return
+        self.broadcast_stop()
+
     def move_to_next(self):
-        if self.is_next_schedule_exist():
+        if self.force_quit_flag:
+            return
+        elif self.is_next_schedule_exist():
             self.current_schedule = self.schedules.popleft()
             self.broadcast_stop()
             self.trigger_start()
         else:
             self.trigger_stop()
 
-    def playback_start(self, subpiece_number=None):
-        cue_detector.stop_detecting()
-        if subpiece_number:
-            subpiece = self.piece.subpieces[subpiece_number]
-            print(f"\nPlayback current SubPiece schedule {subpiece.midi_path}")
-            midi_controller.play(midi_file_path=subpiece.midi_path)
-        else:
-            print(f"\ncurrent schedule {self.current_schedule.midi_path}")
-            midi_controller.play(midi_file_path=self.current_schedule.midi_path)
-        self.broadcast_stop()
-
-    def broadcast_stop(self):
-        print("** 🛑 Stop all playing **")
-        send_osc_end()  # OSC 통신 (3) - End of MIDI
-
     def broadcast_and_panic_stop(self):
+        self.force_quit_flag = True
         midi_controller.stop_midi()
         self.broadcast_stop()
         print("** 🛑🛑 [FORCE] Stop all playing (panic) 🛑🛑 **")
