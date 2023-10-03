@@ -6,7 +6,7 @@ def send_osc_msg(address, arguments=""):
     osc_client.send_message(address, arguments)
     st.text_area(
         label="Log message",
-        value=f"Sent OSC Message.\nAddress: {OSC_SERVER_IP}:{OSC_SERVER_PORT}{address}, Arguments: {arguments}",
+        value=f"Sent OSC Message.\nAddress: {OSC_CLIENT_IP}:{OSC_CLIENT_PORT}{address}, Arguments: {arguments}",
         disabled=True,
     )
     st.toast("Done!", icon="✅")
@@ -19,14 +19,14 @@ with st.container():
     st.subheader("[MACLab] KAIST AI Pianist with 최나경")
     col1, col2 = st.columns(2)
     with col1:
-        OSC_SERVER_IP = st.text_input("OSC Server IP", "192.168.0.20")
+        OSC_CLIENT_IP = st.text_input("OSC Client IP", "192.168.0.20")
     with col2:
-        OSC_SERVER_PORT = int(st.text_input("OSC Server Port", 9999))
+        OSC_CLIENT_PORT = int(st.text_input("OSC Client Port", 9999))
 
 # OSC In
 with st.container():
     st.subheader("OSC In")
-    osc_client = udp_client.SimpleUDPClient(OSC_SERVER_IP, OSC_SERVER_PORT)
+    osc_client = udp_client.SimpleUDPClient(OSC_CLIENT_IP, OSC_CLIENT_PORT)
     st.caption("Choose an OSC message to send:")
 
     # OSC Message List
