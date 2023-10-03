@@ -1,14 +1,14 @@
 from pythonosc import udp_client
 
-from app.config import OSC_SERVER_IP, OSC_SERVER_PORT
+from app.config import OSC_CLIENT_IP, OSC_CLIENT_PORT
 
-client = udp_client.SimpleUDPClient(OSC_SERVER_IP, OSC_SERVER_PORT)
+client = udp_client.SimpleUDPClient(OSC_CLIENT_IP, OSC_CLIENT_PORT)
 
 
 def _send_osc_message(address, args):
     client.send_message(address, args)
     print(
-        f"==> Sent OSC message with {OSC_SERVER_IP}:{OSC_SERVER_PORT}{address} "
+        f"==> Sent OSC message with {OSC_CLIENT_IP}:{OSC_CLIENT_PORT}{address} "
         f"with arguments: {args, type(args)}"
     )
 
