@@ -50,26 +50,3 @@ class VideoCaptureAsync:
 
     def __exit__(self, exec_type, exc_value, traceback):
         self.cap.release()
-
-
-def test():
-    cap = VideoCaptureAsync(0).start_cache()
-    print("FPS:", cap.fps)
-    start_time = cap.start_time
-
-    print("Started")
-    n_count = 0
-    while True:
-        frame, time_stamp = cap.capture()
-        if frame is not None:
-            n_count += 1
-            time_passed = time_stamp - start_time
-            print(time_passed, n_count / time_passed)
-            if cv2.waitKey(1) & 0xFF == ord("q"):
-                break
-    cap.stop_cache()
-    cv2.destroyAllWindows()
-
-
-if __name__ == "__main__":
-    test()
