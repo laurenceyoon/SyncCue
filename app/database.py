@@ -38,7 +38,11 @@ class Piece(Document):
 
 
 def get_piece_list():
-    return Piece.objects.all()
+    return (
+        Piece.objects.all()
+        .values_list("number", "title", "composer", "midi_path", "id")
+        .order_by("number")
+    )
 
 
 def get_piece_by_id(piece_id):

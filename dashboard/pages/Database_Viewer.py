@@ -13,9 +13,11 @@ if "selected_row" not in st.session_state:
     st.session_state.selected_row = None
 
 with st.container():
-    st.markdown("### Table `pieces`")
+    st.markdown("### Collection `pieces`")
     pieces = get_piece_list()
-    pieces_df = pd.DataFrame([piece.to_mongo().to_dict() for piece in pieces])
+    pieces_df = pd.DataFrame(
+        pieces, columns=["Num", "Title", "Composer", "MIDI Path", "_id"]
+    )
     pieces_df.insert(0, "select", False)
     edited_df = st.data_editor(pieces_df, width=800)
 

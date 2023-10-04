@@ -1,5 +1,11 @@
 import streamlit as st
 from pythonosc import udp_client
+import sys
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+sys.path.insert(0, os.getenv("PYTHONPATH"))
 
 
 def send_osc_msg(address, arguments=""):
@@ -38,7 +44,7 @@ with st.container():
 
     with st.expander("/start"):
         address = st.text_input("address", key="start_address", value="/start")
-        arguments = st.text_input("arguments", key="start_arguments", value="0") or None
+        arguments = st.text_input("arguments", key="start_arguments", value="1") or None
         if st.button("Send", key="start_send", use_container_width=True):
             send_osc_msg(address, arguments)
 
@@ -51,7 +57,7 @@ with st.container():
     with st.expander("/playback"):
         address = st.text_input("address", key="playback_address", value="/playback")
         arguments = (
-            st.text_input("arguments", key="playback_arguments", value="1-2") or None
+            st.text_input("arguments", key="playback_arguments", value="0") or None
         )
         if st.button("Send", key="playback_send", use_container_width=True):
             send_osc_msg(address, arguments)
