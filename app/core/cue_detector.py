@@ -16,7 +16,7 @@ from app.config import (
 )
 from app.core.midi_controller import midi_controller
 from app.core.videocapture import VideoCaptureAsync
-from app.osc_client import send_osc_detect, send_osc_end, send_osc_start
+from app.osc_client import send_osc_detect, send_osc_start
 
 
 FEATURE_PARAMS = {
@@ -33,7 +33,14 @@ LK_PARAMS = {
 
 
 class CueDetector:
-    def __init__(self):
+    def __init__(
+        self, fps, threshold_min, threshold_max, adjust_midi_delay, adjust_system_delay
+    ):
+        self.fps = fps
+        self.threshold_min = threshold_min
+        self.threshold_max = threshold_max
+        self.adjust_midi_delay = adjust_midi_delay
+        self.adjust_system_delay = adjust_system_delay
         self.y_vel = None
         self.y_vel_filt = None
         self.time_stamp = None
@@ -50,7 +57,7 @@ class CueDetector:
         self.is_running = True
 
         cap = VideoCaptureAsync(0)
-        cap.fps = FPS
+        cap.fps = self.fps
         cap.start_cache()  # 비디오 캡처 시작
         start_time = cap.start_time  # 시작 시간 기록
         # Initialize VideoWriter
@@ -171,7 +178,7 @@ class CueDetector:
                     y_vel_filt = medfilt(y_vel, 5)
 
                     if self.cue[0] is None:
-                        peaks, _ = find_peaks(y_vel_filt, height=THRESHOLD_MAX)
+                        peaks, _ = find_peaks(y_vel_filt, height=self.threshold_max)
                         if len(peaks) >= 1:
                             # start cue detected
                             print(f"Cue Start detected: {peaks[0]}")
@@ -180,7 +187,7 @@ class CueDetector:
                     else:
                         min_start_index = self.cue[0]
                         mins, _ = find_peaks(
-                            -y_vel_filt[min_start_index:], height=THRESHOLD_MIN
+                            -y_vel_filt[min_start_index:], height=self.threshold_min
                         )
                         if len(mins) >= 1:
                             # end cue detected
@@ -198,7 +205,7 @@ class CueDetector:
                             )
                             if self.cue[1] and self.cue[0]:
                                 send_osc_detect(
-                                    cue_time - time_delay - ADJUST_DELAY_SYSTEM
+                                    cue_time - time_delay - self.adjust_system_delay
                                 )  # OSC 통신 (2) - Detect
                             break
 
@@ -221,7 +228,7 @@ class CueDetector:
         cue_est = cue_end + (cue_end - cue_start)
         cur_time = time.perf_counter() - start_time
 
-        time_left = cue_est - cur_time - ADJUST_DELAY_MIDI
+        time_left = cue_est - cur_time - self.adjust_midi_delay
         if time_left > 0:
             print(f"Wait for {time_left:.2f} seconds")
             time.sleep(time_left)
@@ -235,4 +242,10 @@ class CueDetector:
         self.is_running = False
 
 
-cue_detector = CueDetector()
+cue_detector = CueDetector(
+    fps=FPS,
+    threshold_min=THRESHOLD_MIN,
+    threshold_max=THRESHOLD_MAX,
+    adjust_midi_delay=ADJUST_DELAY_MIDI,
+    adjust_system_delay=ADJUST_DELAY_SYSTEM,
+)
