@@ -66,7 +66,7 @@ class StateMachine:
 
     def broadcast_stop(self):
         print("** 🛑 Stop all playing **")
-        send_osc_end()
+        send_osc_end(self.piece.number)
 
     def transit_to_playback(self):
         cue_detector.stop_detecting()

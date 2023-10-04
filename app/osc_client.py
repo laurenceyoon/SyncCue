@@ -37,5 +37,5 @@ def send_osc_playback(piece_number):
     _send_osc_message("/playback", str(piece_number))
 
 
-def send_osc_end():
-    _send_osc_message("/end", 1)
+def send_osc_end(piece_number):
+    _send_osc_message("/end", str(piece_number))
