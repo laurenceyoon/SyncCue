@@ -1,13 +1,5 @@
 [{
   "_id": {
-    "$oid": "64eb5f4d56e48efc345a6101"
-  },
-  "title": "Violin Sonata No.5, Op.24",
-  "composer": "Beethoven",
-  "midi_path": "./resources/midi/test_beethoven.mid"
-},
-{
-  "_id": {
     "$oid": "64eb681b56e48efc345a6102"
   },
   "title": "Cinema Paradiso",
@@ -27,7 +19,7 @@
       "end_time_margin": 0
     }
   ],
-  "number": 1
+  "number": 2
 },
 {
   "_id": {
@@ -36,7 +28,7 @@
   "title": "Flight of Bumblebee",
   "composer": "Nikolai Rimsky-Korsakov",
   "midi_path": "./resources/midi/startcue_ai_revised.mid",
-  "number": 2
+  "number": 3
 },
 {
   "_id": {
@@ -47,4 +39,24 @@
   "midi_path": "./resources/midi/twinkle.mid",
   "subpieces": [],
   "number": 0
+},
+{
+  "_id": {
+    "$oid": "651d388a0c0db7087e15f653"
+  },
+  "title": "Thank You!",
+  "composer": "KAIST AI Pianist",
+  "midi_path": "./resources/midi/circus_galop.mid",
+  "subpieces": [],
+  "number": 4
+},
+{
+  "_id": {
+    "$oid": "651e210e2798e9be557f90ff"
+  },
+  "title": "A",
+  "composer": "",
+  "midi_path": "./resources/midi/a.mid",
+  "subpieces": [],
+  "number": 1
 }]
