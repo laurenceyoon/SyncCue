@@ -16,4 +16,5 @@ AWAIT_FRAMES = 20
 FPS = 30
 
 # config for MIDI Port
+MIDI_PORT_NAME = "Scarlett 8i6 USB"
 CONNECTION_INTERVAL = 5

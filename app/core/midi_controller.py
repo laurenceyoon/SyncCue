@@ -1,8 +1,9 @@
-import mido
-import time
 import threading
+import time
 
-from app.config import CONNECTION_INTERVAL
+import mido
+
+from app.config import CONNECTION_INTERVAL, MIDI_PORT_NAME
 
 
 class MidiController:
@@ -10,17 +11,19 @@ class MidiController:
         self.interval = connection_interval
         self.outport = None
         self.is_running = False
+        print(mido.get_output_names())
         self.connect_to_midi_port()
 
     def connect_to_midi_port(self):
         thread = threading.Thread(target=self._connect_to_midi_port)
         thread.start()
+        thread.join()
 
     def _connect_to_midi_port(self):
         while True:
             try:
                 if self.outport is None:
-                    self.outport = mido.open_output(autoreset=True)
+                    self.outport = mido.open_output(MIDI_PORT_NAME, autoreset=True)
                     print(f"💡 MIDI PORT CONNECTED 🔌 {self.outport}")
                     break
             except Exception as e:
