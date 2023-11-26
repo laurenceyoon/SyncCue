@@ -10,7 +10,8 @@ from mongoengine import (
 
 from app.config import MONGODB_HOST, MONGODB_PORT
 
-connect("synccue", host=MONGODB_HOST, port=MONGODB_PORT)
+connection = connect("synccue", host=MONGODB_HOST, port=MONGODB_PORT)
+print(f"Connected to MongoDB at {MONGODB_HOST}:{MONGODB_PORT}. {connection}")
 
 # ================== schema ==================
 
