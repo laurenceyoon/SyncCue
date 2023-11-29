@@ -25,7 +25,8 @@ with st.container():
     st.subheader("[MACLab] KAIST AI Pianist with 최나경")
     col1, col2 = st.columns(2)
     with col1:
-        OSC_CLIENT_IP = st.text_input("OSC Client IP", "192.168.0.20")
+        # OSC_CLIENT_IP = st.text_input("OSC Client IP", "192.168.0.20")
+        OSC_CLIENT_IP = st.text_input("OSC Client IP", "127.0.0.1")
     with col2:
         OSC_CLIENT_PORT = int(st.text_input("OSC Client Port", 9999))
 

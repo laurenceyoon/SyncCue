@@ -47,6 +47,7 @@ async def handle_intro(address, args=None):
 async def handle_intro(address, args=None):
     print("Outro Start; Command Unity to Start the OUTRO Animation.")
     send_osc_outro()
+    await run_in_background(playback_start_for_piece, "4")
 
 
 def run_streamlit_app():

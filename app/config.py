@@ -4,7 +4,8 @@ MONGODB_PORT = 27017
 
 # config for OSC
 OSC_SERVER_PORT = 9999
-OSC_CLIENT_IP = "192.168.0.20"
+# OSC_CLIENT_IP = "192.168.0.20"
+OSC_CLIENT_IP = "127.0.0.1"
 OSC_CLIENT_PORT = 5225
 
 # config for cue_detector
